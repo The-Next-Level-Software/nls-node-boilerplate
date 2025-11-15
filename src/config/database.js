@@ -34,7 +34,7 @@ export const connectDB = async () => {
 // 🧩 Graceful Shutdown
 // -----------------------------------------------------------------------------
 mongoose.connection.on("disconnected", () => {
-    logger.warn("⚠️ MongoDB disconnected");
+    logger.warn("⚠️ MongoDB disconnected", true);
 });
 
 process.on("SIGINT", async () => {

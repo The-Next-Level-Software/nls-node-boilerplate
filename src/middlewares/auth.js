@@ -1,15 +1,42 @@
-// src/middleware/auth.js
-import jwt from "jsonwebtoken";
-import config from "../config/index.js";
+// src/middlewares/auth.middleware.js
+import { verifyToken } from "../utils/jwt.util.js";
 
-export default (req, res, next) => {
-    const header = req.headers.authorization;
-    if (!header) return res.status(401).json({ success: false, message: "Unauthorized" });
-    const token = header.split(" ")[1];
+const auth = (req, res, next) => {
     try {
-        req.user = jwt.verify(token, config.jwtSecret);
-        next();
-    } catch {
-        res.status(401).json({ success: false, message: "Invalid token" });
+        let token = req.headers.authorization;
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: Token missing",
+            });
+        }
+
+        // Support: "Bearer <token>" OR "<token>"
+        if (token.startsWith("Bearer ")) {
+            token = token.split(" ")[1];
+        }
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: Invalid token format",
+            });
+        }
+
+        // Verify token
+        const decoded = verifyToken(token);
+
+        // Attach decoded payload to req.user
+        req.user = decoded;
+
+        return next();
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: "Invalid or expired token",
+        });
     }
 };
+
+export default auth;
