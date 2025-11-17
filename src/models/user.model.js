@@ -1,8 +1,7 @@
 // src/models/user.model.js
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import { generateToken } from "../utils/jwt.util";
-import { hashPassword } from "../utils/password.util";
+import { PasswordUtils } from "../utils/password.util.js"
+import { generateAuthTokens } from "../services/auth.service.js";
 
 const userSchema = new mongoose.Schema(
     {
@@ -15,24 +14,19 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
-    this.password = await hashPassword(this.password);
+    this.password = await PasswordUtils.hash(this.password);
     next();
 });
 
 userSchema.methods.comparePassword = function (password) {
-    return bcrypt.compare(password, this.password);
+    return PasswordUtils.compare(password, this.password);
 };
 
-userSchema.methods.tokenPayload = function () {
-    return {
-        _id: this._id,
-        name: this.name,
-        email: this.email,
-    };
-};
-
+/**
+ * Generate Access + Refresh Token Pair
+ */
 userSchema.methods.generateAuthToken = function () {
-    return generateToken(this.tokenPayload());
+    return generateAuthTokens(this);
 }
 
 export default mongoose.model("User", userSchema);

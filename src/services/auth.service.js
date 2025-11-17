@@ -1,8 +1,6 @@
 // src/services/auth.service.js
 
 import { JwtUtils } from "../utils/jwt.util.js";
-import { generateApiResponse } from "./utilities.service.js";
-import { StatusCodes } from "http-status-codes";
 
 /**
  * Generate Access + Refresh Token Pair

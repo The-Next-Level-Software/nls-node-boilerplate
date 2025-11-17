@@ -2,9 +2,9 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import routes from "./routes/index.js";
-import { getHealthPage } from "./startup/health.js";
 import authMiddleware from "./middlewares/auth.middleware.js";
 import { WHITELIST } from "./config/whitelist.js";
+import { getHealthPage } from './config/health.js';
 
 const app = express();
 
