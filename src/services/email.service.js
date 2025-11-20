@@ -3,18 +3,18 @@
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
-import config from "../config/index.js";
+import appConfig from "../config/index.js";
 import constants from "../config/constants.js";
 
 class EmailService {
     constructor() {
         this.transporter = nodemailer.createTransport({
-            host: config.email.host,
-            port: config.email.port,
-            secure: config.email.secure,
+            host: appConfig.email.host,
+            port: appConfig.email.port,
+            secure: appConfig.email.secure,
             auth: {
-                user: config.email.user,
-                pass: config.email.pass,
+                user: appConfig.email.user,
+                pass: appConfig.email.pass,
             },
         });
     }
@@ -51,7 +51,7 @@ class EmailService {
      */
     async sendEmail(to, subject, text = null, html = null, attachments = []) {
         const mailOptions = {
-            from: `${config.email.fromName} <${config.email.fromEmail}>`,
+            from: `${appConfig.email.fromName} <${appConfig.email.fromEmail}>`,
             to,
             subject,
             text,

@@ -1,18 +1,18 @@
 import jwt from "jsonwebtoken";
-import config from "../config/index.js";
+import appConfig from "../config/index.js";
 
 export class JwtUtils {
     /**
      * Generate a JWT token
      */
-    static generateToken(payload, expiresIn = "7d", secret = config.jwtSecret) {
+    static generateToken(payload, expiresIn = "7d", secret = appConfig.jwtSecret) {
         return jwt.sign(payload, secret, { expiresIn });
     }
 
     /**
      * Verify a JWT token
      */
-    static verifyToken(token, secret = config.jwtSecret) {
+    static verifyToken(token, secret = appConfig.jwtSecret) {
         return jwt.verify(token, secret);
     }
 
@@ -80,7 +80,7 @@ export class JwtUtils {
     /**
      * Try verifying safely (returns null instead of throwing)
      */
-    static safeVerify(token, secret = config.jwtSecret) {
+    static safeVerify(token, secret = appConfig.jwtSecret) {
         try {
             return jwt.verify(token, secret);
         } catch {
@@ -91,7 +91,7 @@ export class JwtUtils {
     /**
      * Check if token is valid (boolean)
      */
-    static isValid(token, secret = config.jwtSecret) {
+    static isValid(token, secret = appConfig.jwtSecret) {
         return this.safeVerify(token, secret) !== null;
     }
 }

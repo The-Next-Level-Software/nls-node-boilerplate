@@ -31,6 +31,7 @@ nextlevel-boilerplate/
 │   │   ├── otp.service.js
 │   │   ├── pagination.service.js
 │   │   ├── search.service.js
+│   │   ├── socket.service.js  <-- Socket.IO service
 │   │   ├── upload.service.js
 │   │   └── webhook.service.js
 │   ├── startup/

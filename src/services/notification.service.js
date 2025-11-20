@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import config from "../config/index.js";
+import appConfig from "../config/index.js";
 
 /**
  * OneSignal Notification Service
@@ -19,7 +19,7 @@ export class NotificationService {
             }
 
             const body = {
-                app_id: config.oneSignal.appId,
+                app_id: appConfig.oneSignal.appId,
                 include_player_ids: playerIds,
                 headings: { en: heading },
                 contents: { en: content },
@@ -30,7 +30,7 @@ export class NotificationService {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Basic ${config.oneSignal.apiKey}`,
+                    Authorization: `Basic ${appConfig.oneSignal.apiKey}`,
                 },
                 body: JSON.stringify(body),
             });

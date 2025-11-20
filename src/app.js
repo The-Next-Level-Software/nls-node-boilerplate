@@ -4,7 +4,7 @@ import cors from "cors";
 import routes from "./routes/index.js";
 import authMiddleware from "./middlewares/auth.middleware.js";
 import { WHITELIST } from "./config/whitelist.js";
-import { getHealthPage } from './config/health.js';
+import { getHealth, getHealthPage } from './config/health.js';
 
 const app = express();
 
@@ -16,6 +16,7 @@ app.use(express.json());
 
 // Health check (public)
 app.get("/health", getHealthPage);
+app.get("/health.json", getHealth);
 
 // -----------------------------
 // Helmet only for /api routes

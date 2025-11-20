@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import config from "../config/index.js";
+import appConfig from "../config/index.js";
 
 /**
  * Cache Service using Redis
@@ -7,10 +7,10 @@ import config from "../config/index.js";
 class CacheService {
     constructor() {
         this.client = new Redis({
-            host: config.REDIS_HOST || "127.0.0.1",
-            port: Number(config.REDIS_PORT) || 6379,
-            password: config.REDIS_PASSWORD || undefined,
-            db: Number(config.REDIS_DB) || 0,
+            host: appConfig.REDIS_HOST || "127.0.0.1",
+            port: Number(appConfig.REDIS_PORT) || 6379,
+            password: appConfig.REDIS_PASSWORD || undefined,
+            db: Number(appConfig.REDIS_DB) || 0,
         });
 
         this.client.on("connect", () => console.log("✅ Redis connected"));

@@ -2,13 +2,14 @@
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import mongoose from "mongoose";
 import { User } from "../startup/models.js";
 import bcrypt from "bcryptjs"; // for hashing passwords
+import { connectDB } from "../config/database.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Currently only User, but can add more later
 const MODELS = [
     { name: "Users", model: User, file: "users.json", hashPassword: true },
 ];
@@ -33,7 +34,6 @@ export const seedDatabase = async (connection) => {
                     continue;
                 }
 
-                // Hash password if required
                 if (hashPassword) {
                     data = await Promise.all(
                         data.map(async (item) => {
@@ -62,3 +62,19 @@ export const seedDatabase = async (connection) => {
         console.error("❌ Error during seeding:", err);
     }
 };
+
+// -----------------------------------------------------------------------------
+// Standalone execution (npm run seed)
+// -----------------------------------------------------------------------------
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    (async () => {
+        console.log("🚀 Starting database seeding...");
+
+        const connection = await connectDB();
+        await seedDatabase(connection);
+
+        await mongoose.connection.close();
+        console.log("🔒 MongoDB connection closed");
+        process.exit(0);
+    })();
+}

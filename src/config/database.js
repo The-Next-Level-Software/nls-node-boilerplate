@@ -1,9 +1,9 @@
 // src/config/database.js
 import mongoose from "mongoose";
-import config from "./index.js";
+import appConfig from "./index.js";
 import logger from "./logger.js";
 
-const { nodeEnv: ENV, mongoUri: MONGO_URI } = config;
+const { server: { nodeEnv: ENV }, db: { mongoUri: MONGO_URI } } = appConfig;
 
 /**
  * Connects to MongoDB using Mongoose.
@@ -17,16 +17,18 @@ export const connectDB = async () => {
         await mongoose.connect(MONGO_URI);
 
         logger.info("✅ MongoDB Connected Successfully", true);
+        return mongoose.connection;   // <-- FIXED
     } catch (err) {
         logger.error(`❌ MongoDB Connection Error: ${err.message}`);
 
-        // Optional: Retry logic for dev environments
         if (ENV === "dev") {
             logger.warn("⏳ Retrying connection in 5 seconds...");
             setTimeout(connectDB, 5000);
         } else {
             process.exit(1);
         }
+
+        return null;
     }
 };
 
