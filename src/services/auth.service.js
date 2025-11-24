@@ -59,8 +59,6 @@ class AuthService {
     static async logout(refreshToken) {
         
         if (!refreshToken) return { message: "Already logged out" };
-        
-        console.log("refreshToken: ", refreshToken);
         await Session.updateOne(
             { refreshToken },
             { $set: { isActive: false } }

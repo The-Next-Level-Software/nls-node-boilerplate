@@ -1,3 +1,5 @@
+import appConfig from "../config/index.js";
+
 /**
  * Pagination Service
  * Provides helpers to paginate data and generate metadata
@@ -9,7 +11,7 @@ export class PaginationService {
      * @param {number} limit - items per page
      * @returns {object} - { skip, limit, page }
      */
-    static getPagination(page = 1, limit = 10) {
+    static getPagination(page = appConfig.pagination.defaultPage, limit = appConfig.pagination.defaultLimit) {
         const safeLimit = Math.max(1, parseInt(limit, 10));
         const safePage = Math.max(1, parseInt(page, 10));
         const skip = (safePage - 1) * safeLimit;
@@ -23,7 +25,7 @@ export class PaginationService {
      * @param {number} limit - items per page
      * @returns {object} - { totalItems, totalPages, currentPage, pageSize, hasNext, hasPrev }
      */
-    static getMeta(totalItems, page = 1, limit = 10) {
+    static getMeta(totalItems, page = appConfig.pagination.defaultPage, limit = appConfig.pagination.defaultLimit) {
         const totalPages = Math.ceil(totalItems / limit);
         const currentPage = Math.min(page, totalPages);
         return {
@@ -43,7 +45,7 @@ export class PaginationService {
      * @param {number} limit
      * @returns {object} - { data: [], meta: {} }
      */
-    static paginateArray(items = [], page = 1, limit = 10) {
+    static paginateArray(items = [], page = appConfig.pagination.defaultPage, limit = appConfig.pagination.defaultLimit) {
         const { skip, limit: safeLimit, page: currentPage } = this.getPagination(page, limit);
         const paginatedData = items.slice(skip, skip + safeLimit);
         const meta = this.getMeta(items.length, currentPage, safeLimit);
@@ -55,7 +57,7 @@ export class PaginationService {
      * @param {object} options - { page, limit }
      * @returns {object} - { skip, limit }
      */
-    static paginateQuery({ page = 1, limit = 10 } = {}) {
+    static paginateQuery({ page = appConfig.pagination.defaultPage, limit = appConfig.pagination.defaultLimit } = {}) {
         return this.getPagination(page, limit);
     }
 }

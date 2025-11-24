@@ -39,11 +39,7 @@ const authMiddleware = (whitelist = []) => (req, res, next) => {
             return generateErrorApiResponse(res, 401, "Unauthorized: Token missing");
         }
 
-        console.log("token: ", token);
-
         const decoded = JwtUtils.safeVerify(token);
-
-        console.log("-- decoded: ", decoded);
 
         if (!decoded) {
             return generateErrorApiResponse(res, 401, "Unauthorized: Invalid or expired token");

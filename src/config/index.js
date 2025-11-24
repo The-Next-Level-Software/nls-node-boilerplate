@@ -74,6 +74,8 @@ const appConfig = {
     pagination: {
         defaultPage: 1,
         defaultLimit: 10,
+        defaultSortBy: 'createdAt',
+        defaultOrder: 'desc',
     }
 };
 
