@@ -1,5 +1,6 @@
-import { StatusCodes } from "http-status-codes";
 import { validationResult, body, param, query } from "express-validator";
+import { StatusCodes } from "http-status-codes";
+
 import { generateApiResponse } from "../utils/response.util.js";
 
 /**
@@ -15,23 +16,27 @@ const predefinedValidators = {
     return validator;
   },
 
-  name: (attr) => body(attr)
-    .trim()
-    .notEmpty().withMessage("Name is required."),
+  name: (attr) => body(attr).trim().notEmpty().withMessage("Name is required."),
   // .custom((value) => {
   //   if (badWordsCheck(value)) throw new Error("Name contains inappropriate language.");
   //   return true;
   // }),
 
-  email: (attr) => body(attr)
-    .trim()
-    .notEmpty().withMessage("Email is required.")
-    .isEmail().withMessage("Email must be a valid email."),
+  email: (attr) =>
+    body(attr)
+      .trim()
+      .notEmpty()
+      .withMessage("Email is required.")
+      .isEmail()
+      .withMessage("Email must be a valid email."),
 
-  phone: (attr) => body(attr)
-    .trim()
-    .notEmpty().withMessage("Phone number is required.")
-    .matches(/^\+?\d{7,15}$/).withMessage("Phone number must be valid."),
+  phone: (attr) =>
+    body(attr)
+      .trim()
+      .notEmpty()
+      .withMessage("Phone number is required.")
+      .matches(/^\+?\d{7,15}$/)
+      .withMessage("Phone number must be valid."),
 };
 
 /**
@@ -43,9 +48,7 @@ const predefinedValidators = {
 const getValidator = (attr, type = "body", options = {}) => {
   if (predefinedValidators[attr]) return predefinedValidators[attr](attr, options);
 
-  const checker = type === "param" ? param(attr)
-    : type === "query" ? query(attr)
-      : body(attr);
+  const checker = type === "param" ? param(attr) : type === "query" ? query(attr) : body(attr);
 
   return checker.trim().notEmpty().withMessage(`${attr} is required.`);
 };
@@ -57,14 +60,14 @@ const getValidator = (attr, type = "body", options = {}) => {
  * @param {object} options - Optional settings for specific validators
  */
 export const validate = (attributes = [], type = "body", options = {}) => {
-  const rules = attributes.map(attr => getValidator(attr, type, options[attr] || {}));
+  const rules = attributes.map((attr) => getValidator(attr, type, options[attr] || {}));
 
   return [
     ...rules,
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        const validationErrors = errors.array().map(err => err.msg);
+        const validationErrors = errors.array().map((err) => err.msg);
         return generateApiResponse(
           res,
           StatusCodes.BAD_REQUEST,
@@ -73,7 +76,7 @@ export const validate = (attributes = [], type = "body", options = {}) => {
         );
       }
       next();
-    }
+    },
   ];
 };
 

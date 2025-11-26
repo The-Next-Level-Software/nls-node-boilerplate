@@ -1,11 +1,12 @@
+import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import cors from "cors";
-import routes from "./routes/index.js";
-import authMiddleware from "./middlewares/auth.middleware.js";
+
+import { getHealth, getHealthPage } from "./config/health.js";
 import { WHITELIST } from "./config/whitelist.js";
-import { getHealth, getHealthPage } from './config/health.js';
+import authMiddleware from "./middlewares/auth.middleware.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
+import routes from "./routes/index.js";
 
 const app = express();
 
@@ -31,7 +32,7 @@ app.use("/api", helmet());
 app.use("/api", authMiddleware(WHITELIST.overall), routes);
 
 // -----------------------------
-// Global error handler 
+// Global error handler
 // -----------------------------
 app.use(errorMiddleware);
 

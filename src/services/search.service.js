@@ -1,124 +1,117 @@
 import appConfig from "../config/index.js";
 
 class SearchService {
-    /**
-     * Build a search query dynamically
-     */
-    static buildSearchQuery(searchFields, term) {
-        if (!term || !searchFields) return {};
+  /**
+   * Build a search query dynamically
+   */
+  static buildSearchQuery(searchFields, term) {
+    if (!term || !searchFields) return {};
 
-        const query = { $or: [] };
+    const query = { $or: [] };
 
-        for (const [field, type] of Object.entries(searchFields)) {
-            switch (type) {
-                case "string":
-                    query.$or.push({ [field]: { $regex: term, $options: "i" } });
-                    break;
+    for (const [field, type] of Object.entries(searchFields)) {
+      switch (type) {
+        case "string":
+          query.$or.push({ [field]: { $regex: term, $options: "i" } });
+          break;
 
-                case "number":
-                    const num = Number(term);
-                    if (!isNaN(num)) query.$or.push({ [field]: num });
-                    break;
+        case "number":
+          const num = Number(term);
+          if (!isNaN(num)) query.$or.push({ [field]: num });
+          break;
 
-                case "boolean":
-                    if (["true", "false"].includes(term.toLowerCase())) {
-                        query.$or.push({ [field]: term.toLowerCase() === "true" });
-                    }
-                    break;
+        case "boolean":
+          if (["true", "false"].includes(term.toLowerCase())) {
+            query.$or.push({ [field]: term.toLowerCase() === "true" });
+          }
+          break;
 
-                default:
-                    query.$or.push({ [field]: term });
-            }
-        }
-
-        return query.$or.length ? query : {};
+        default:
+          query.$or.push({ [field]: term });
+      }
     }
 
-    /**
-     * Pagination
-     */
-    static async paginate(query, page, limit) {
-        const skip = (page - 1) * limit;
+    return query.$or.length ? query : {};
+  }
 
-        const [total, results] = await Promise.all([
-            query.model.countDocuments(query.getQuery()),
-            query.skip(skip).limit(limit)
-        ]);
+  /**
+   * Pagination
+   */
+  static async paginate(query, page, limit) {
+    const skip = (page - 1) * limit;
 
-        return {
-            results,
-            pagination: {
-                total,
-                page,
-                limit,
-                pages: Math.ceil(total / limit),
-            },
-        };
-    }
+    const [total, results] = await Promise.all([
+      query.model.countDocuments(query.getQuery()),
+      query.skip(skip).limit(limit),
+    ]);
 
-    /**
-     * Sorting
-     */
-    static applySorting(query, sortBy = "createdAt", order = "desc") {
-        const sortOrder = order.toLowerCase() === "asc" ? 1 : -1;
-        return query.sort({ [sortBy]: sortOrder });
-    }
+    return {
+      results,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    };
+  }
 
-    /**
-     * Field selection
-     */
-    static applySelect(query, fields = []) {
-        if (!fields.length) return query;
-        return query.select(fields.join(" "));
-    }
+  /**
+   * Sorting
+   */
+  static applySorting(query, sortBy = "createdAt", order = "desc") {
+    const sortOrder = order.toLowerCase() === "asc" ? 1 : -1;
+    return query.sort({ [sortBy]: sortOrder });
+  }
 
-    /**
-     * Generic search method
-     */
-    static async search(model, options = {}) {
-        const {
-            searchFields = null,
-            term = "",
-            page = appConfig.pagination.defaultPage,
-            limit = appConfig.pagination.defaultLimit,
-            sortBy = "createdAt",
-            order = "desc",
-            selectFields = [],
-        } = options;
+  /**
+   * Field selection
+   */
+  static applySelect(query, fields = []) {
+    if (!fields.length) return query;
+    return query.select(fields.join(" "));
+  }
 
-        const searchQuery = this.buildSearchQuery(searchFields, term);
+  /**
+   * Generic search method
+   */
+  static async search(model, options = {}) {
+    const {
+      searchFields = null,
+      term = "",
+      page = appConfig.pagination.defaultPage,
+      limit = appConfig.pagination.defaultLimit,
+      sortBy = "createdAt",
+      order = "desc",
+      selectFields = [],
+    } = options;
 
-        let query = model.find(searchQuery);
+    const searchQuery = this.buildSearchQuery(searchFields, term);
 
-        query = this.applySorting(query, sortBy, order);
-        query = this.applySelect(query, selectFields);
+    let query = model.find(searchQuery);
 
-        return await this.paginate(query, page, limit);
-    }
+    query = this.applySorting(query, sortBy, order);
+    query = this.applySelect(query, selectFields);
 
-    /**
-     * 🔥 NEW: Extract everything from req.query for boilerplate APIs
-     */
-    static async handleRequest(model, req, { searchFields = {} } = {}) {
-        const {
-            term = "",
-            page,
-            limit,
-            sortBy = "createdAt",
-            order = "desc",
-            fields,
-        } = req.query;
+    return await this.paginate(query, page, limit);
+  }
 
-        return await this.search(model, {
-            searchFields,
-            term,
-            page: page ? Number(page) : undefined,
-            limit: limit ? Number(limit) : undefined,
-            sortBy,
-            order,
-            selectFields: fields ? fields.split(",") : [],
-        });
-    }
+  /**
+   * 🔥 NEW: Extract everything from req.query for boilerplate APIs
+   */
+  static async handleRequest(model, req, { searchFields = {} } = {}) {
+    const { term = "", page, limit, sortBy = "createdAt", order = "desc", fields } = req.query;
+
+    return await this.search(model, {
+      searchFields,
+      term,
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+      sortBy,
+      order,
+      selectFields: fields ? fields.split(",") : [],
+    });
+  }
 }
 
 export const searchService = SearchService;

@@ -17,66 +17,66 @@ dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
 // ⚙️ Config object
 // -----------------------------------------------------------------------------
 const appConfig = {
-    project: {
-        name: process.env.PROJECT_NAME || "MyNodeApp",
-        description: process.env.PROJECT_DESCRIPTION || "Node.js Boilerplate",
-        version: process.env.PROJECT_VERSION || "1.0.0",
-        baseUrl: process.env.BASE_URL || "http://localhost:5000",
-    },
+  project: {
+    name: process.env.PROJECT_NAME || "MyNodeApp",
+    description: process.env.PROJECT_DESCRIPTION || "Node.js Boilerplate",
+    version: process.env.PROJECT_VERSION || "1.0.0",
+    baseUrl: process.env.BASE_URL || "http://localhost:5000",
+  },
 
-    server: {
-        port: Number(process.env.PORT) || 5000,
-        nodeEnv: ENV,
-    },
+  server: {
+    port: Number(process.env.PORT) || 5000,
+    nodeEnv: ENV,
+  },
 
-    db: {
-        mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/nextlevel",
-    },
+  db: {
+    mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/nextlevel",
+  },
 
-    jwt: {
-        secret: process.env.JWT_SECRET || "supersecretkey",
-        expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-        accessExpires: process.env.JWT_ACCESS_EXPIRES || "1h",
-        refreshExpires: process.env.JWT_REFRESH_EXPIRES || "7d",
-    },
+  jwt: {
+    secret: process.env.JWT_SECRET || "supersecretkey",
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+    accessExpires: process.env.JWT_ACCESS_EXPIRES || "1h",
+    refreshExpires: process.env.JWT_REFRESH_EXPIRES || "7d",
+  },
 
-    email: {
-        host: process.env.EMAIL_HOST || "smtp.gmail.com",
-        port: Number(process.env.EMAIL_PORT) || 587,
-        secure: process.env.EMAIL_SECURE === "true",
-        user: process.env.EMAIL_USER || "",
-        pass: process.env.EMAIL_PASS || "",
-        fromName: process.env.EMAIL_FROM_NAME || "MyNodeApp",
-        fromEmail: process.env.EMAIL_FROM_EMAIL || process.env.EMAIL_USER,
-    },
+  email: {
+    host: process.env.EMAIL_HOST || "smtp.gmail.com",
+    port: Number(process.env.EMAIL_PORT) || 587,
+    secure: process.env.EMAIL_SECURE === "true",
+    user: process.env.EMAIL_USER || "",
+    pass: process.env.EMAIL_PASS || "",
+    fromName: process.env.EMAIL_FROM_NAME || "MyNodeApp",
+    fromEmail: process.env.EMAIL_FROM_EMAIL || process.env.EMAIL_USER,
+  },
 
-    otp: {
-        length: Number(process.env.OTP_LENGTH) || 6,
-        expiryMinutes: Number(process.env.OTP_EXPIRY_MINUTES) || 5,
-    },
+  otp: {
+    length: Number(process.env.OTP_LENGTH) || 6,
+    expiryMinutes: Number(process.env.OTP_EXPIRY_MINUTES) || 5,
+  },
 
-    colors: {
-        primary: process.env.COLOR_PRIMARY || "#1D4ED8",
-        secondary: process.env.COLOR_SECONDARY || "#F59E0B",
-        success: process.env.COLOR_SUCCESS || "#10B981",
-        danger: process.env.COLOR_DANGER || "#EF4444",
-        warning: process.env.COLOR_WARNING || "#FBBF24",
-        info: process.env.COLOR_INFO || "#3B82F6",
-        light: process.env.COLOR_LIGHT || "#F3F4F6",
-        dark: process.env.COLOR_DARK || "#111827",
-    },
+  colors: {
+    primary: process.env.COLOR_PRIMARY || "#1D4ED8",
+    secondary: process.env.COLOR_SECONDARY || "#F59E0B",
+    success: process.env.COLOR_SUCCESS || "#10B981",
+    danger: process.env.COLOR_DANGER || "#EF4444",
+    warning: process.env.COLOR_WARNING || "#FBBF24",
+    info: process.env.COLOR_INFO || "#3B82F6",
+    light: process.env.COLOR_LIGHT || "#F3F4F6",
+    dark: process.env.COLOR_DARK || "#111827",
+  },
 
-    oneSignal: {
-        appId: process.env.ONESIGNAL_APP_ID || "",
-        apiKey: process.env.ONESIGNAL_API_KEY || "",
-    },
+  oneSignal: {
+    appId: process.env.ONESIGNAL_APP_ID || "",
+    apiKey: process.env.ONESIGNAL_API_KEY || "",
+  },
 
-    pagination: {
-        defaultPage: 1,
-        defaultLimit: 10,
-        defaultSortBy: 'createdAt',
-        defaultOrder: 'desc',
-    }
+  pagination: {
+    defaultPage: 1,
+    defaultLimit: 10,
+    defaultSortBy: "createdAt",
+    defaultOrder: "desc",
+  },
 };
 
 export default appConfig;
