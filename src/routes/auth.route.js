@@ -20,7 +20,7 @@ router.post(
 );
 
 // Refresh Token
-router.post("/refresh-token", validate(["refreshToken"]), AuthController.refreshToken);
+router.post("/refresh-token", AuthController.refreshToken);
 
 // Logout (current device / session)
 router.post("/logout", AuthController.logout);

@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 import AuthService from "../services/auth.service.js";
-import { User } from "../startup/models.js";
+import { Role, User } from "../startup/models.js";
 import { generateApiResponse, generateErrorApiResponse } from "../utils/response.util.js";
 
 class AuthController {
@@ -11,7 +11,9 @@ class AuthController {
   static async register(req, res) {
     const { name, email, password } = req.body;
 
-    const user = await User.create({ name, email, password });
+    const findRole = await Role.findOne({ name: "user" });
+
+    const user = await User.create({ name, email, password, role: findRole._id });
 
     return generateApiResponse(res, StatusCodes.CREATED, "Registration successful", {
       user: {
@@ -60,13 +62,8 @@ class AuthController {
      ----------------------------------------*/
   static async refreshToken(req, res) {
     const { refreshToken } = req.body;
-
-    try {
-      const newTokens = await AuthService.refreshToken(refreshToken);
-      return generateApiResponse(res, StatusCodes.OK, "Token refreshed", newTokens);
-    } catch (error) {
-      return generateErrorApiResponse(res, StatusCodes.UNAUTHORIZED, error.message);
-    }
+    const newTokens = await AuthService.refreshToken(refreshToken);
+    return generateApiResponse(res, StatusCodes.OK, "Token refreshed", newTokens);
   }
 
   /** ---------------------------------------

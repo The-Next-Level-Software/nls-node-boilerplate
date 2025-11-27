@@ -6,7 +6,7 @@ export const WHITELIST = {
     "/auth/register",
     "/auth/login",
     "/auth/logout",
-    // "/auth/refresh-token",
+    "/auth/refresh-token",
     // "/auth/me",
   ],
 

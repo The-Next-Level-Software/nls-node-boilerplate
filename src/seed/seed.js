@@ -6,12 +6,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { connectDB } from "../config/database.js";
-import { User } from "../startup/models.js";
+import { Role, User } from "../startup/models.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const MODELS = [{ name: "Users", model: User, file: "users.json", hashPassword: true }];
+const MODELS = [
+  { name: "Roles", model: Role, file: "roles.json", hashPassword: true },
+  { name: "Users", model: User, file: "users.json", hashPassword: true },
+];
 
 export const seedDatabase = async (connection) => {
   try {
@@ -38,6 +41,16 @@ export const seedDatabase = async (connection) => {
             data.map(async (item) => {
               if (item.password) {
                 item.password = await bcrypt.hash(item.password, 10);
+              }
+              if (
+                item.role &&
+                typeof item.role === "string" &&
+                item.role.toLowerCase() === "user"
+              ) {
+                const role = await Role.findOne({ name: "user" }).select("_id").lean();
+                if (role) {
+                  item.role = role._id;
+                }
               }
               return item;
             })
