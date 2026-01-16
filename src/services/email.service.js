@@ -1,11 +1,9 @@
-// src/services/email.service.js
-
 import fs from "fs";
 import nodemailer from "nodemailer";
 import path from "path";
 
-import constants from "../config/constants.js";
 import appConfig from "../config/index.js";
+// import constants from '../constants/constant.js';
 
 class EmailService {
   constructor() {
@@ -35,7 +33,7 @@ class EmailService {
     let html = template;
 
     const mergedVars = {
-      ...constants,
+      // ...constants,
       ...variables,
       year: new Date().getFullYear(),
     };

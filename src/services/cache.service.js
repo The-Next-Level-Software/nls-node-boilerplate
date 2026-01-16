@@ -12,6 +12,7 @@ class CacheService {
       port: Number(appConfig.REDIS_PORT) || 6379,
       password: appConfig.REDIS_PASSWORD || undefined,
       db: Number(appConfig.REDIS_DB) || 0,
+      maxRetriesPerRequest: null,
     });
 
     this.client.on("connect", () => console.log("✅ Redis connected"));
