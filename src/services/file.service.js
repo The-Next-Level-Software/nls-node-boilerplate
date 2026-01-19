@@ -5,6 +5,10 @@ class FileService {
         return getFileProvider(provider).upload(file, options);
     }
 
+    async deleteFile({ fileId, provider }) {
+        return getFileProvider(provider).delete(fileId);
+    }
+
     async uploadMultiple({ files, options, provider }) {
         if (!files || !files.length) return [];
         return Promise.all(

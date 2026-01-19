@@ -21,6 +21,9 @@ router.post("/local/images", uploadMiddleware({ type: "multiple", field: "images
 // ===== Local multiple fields upload (file + image together) =====
 router.post("/local/all", uploadMiddleware({ type: "fields", fields: ["file", "image"], maxCount: 5 }), FileController.uploadLocalFields);
 
+// Delete file from local public folder (field: 'file')
+router.delete("/local/file/:fileId", FileController.deleteFile);
+
 
 // ================= S3 =================
 
@@ -38,6 +41,9 @@ router.post("/s3/images", uploadMiddleware({ type: "multiple", field: "images", 
 
 // ===== S3 multiple fields upload (file + image together) =====
 router.post("/s3/all", uploadMiddleware({ type: "fields", fields: ["file", "image"], maxCount: 5 }), FileController.uploadS3Fields);
+
+// Delete file from S3 (field: 'file')
+router.delete("/s3/file/:key", FileController.deleteS3File);
 
 
 export default router;

@@ -80,6 +80,17 @@ export class FileController {
         }
     }
 
+    static async deleteFile(req, res) {
+        try {
+            const { fileId } = req.params;
+            console.log(fileId)
+            await fileService.deleteFile({ fileId });
+            return generateApiResponse(res, 200, "File deleted successfully");
+        } catch (err) {
+            return generateErrorApiResponse(res, 500, err);
+        }
+    }
+
 
     // ==================== S3 FILE PROVIDER ====================
 
@@ -153,6 +164,16 @@ export class FileController {
             }
 
             return generateApiResponse(res, 200, "Files uploaded to S3 from multiple fields", { uploaded });
+        } catch (err) {
+            return generateErrorApiResponse(res, 500, err);
+        }
+    }
+
+    static async deleteS3File(req, res) {
+        try {
+            const { key } = req.params;
+            await fileService.deleteFile({ fileId: key, provider: "s3" });
+            return generateApiResponse(res, 200, "S3 file deleted successfully");
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
