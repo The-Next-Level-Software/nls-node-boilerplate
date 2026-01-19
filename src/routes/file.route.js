@@ -1,5 +1,5 @@
 import express from "express";
-import { FileController } from "../controllers/FileController.js";
+import { FileController } from "../controllers/file.controller.js";
 import { uploadMiddleware } from "../middlewares/upload.middleware.js";
 
 const router = express.Router();

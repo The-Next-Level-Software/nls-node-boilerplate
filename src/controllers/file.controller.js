@@ -1,5 +1,5 @@
 import { fileService } from "../services/file.service.js";
-import { generateApiResponse, generateErrorApiResponse } from "../utils/response.js";
+import { generateApiResponse, generateErrorApiResponse } from "../utils/response.util.js";
 
 export class FileController {
     // ==================== LOCAL FILE PROVIDER ====================
