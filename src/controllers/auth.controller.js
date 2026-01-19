@@ -13,7 +13,13 @@ class AuthController {
 
     const findRole = await Role.findOne({ name: "user" });
 
-    const user = await User.create({ name, email, password, role: findRole._id });
+    const existing = await User.findOne({ email });
+
+    if (existing) {
+      return generateErrorApiResponse(res, StatusCodes.CONFLICT, "User already exists");
+    }
+
+    const user = await User.create({ name, email, password, role: findRole && findRole._id });
 
     return generateApiResponse(res, StatusCodes.CREATED, "Registration successful", {
       user: {

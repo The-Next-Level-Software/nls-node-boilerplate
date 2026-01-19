@@ -1,4 +1,5 @@
 import multer from "multer";
+import { generateApiResponse } from "../utils/response.util.js";
 
 const storage = multer.memoryStorage();
 
@@ -6,27 +7,13 @@ const storage = multer.memoryStorage();
  * Upload middleware factory for handling multipart/form-data
  *
  * @param {Object} options - Configuration options for upload behavior
- *
  * @param {"single"|"multiple"|"fields"} [options.type="single"]
- * Determines upload mode:
- * - "single"   → accepts one file
- * - "multiple" → accepts multiple files under the same field
- * - "fields"   → accepts multiple files with different field names
- *
  * @param {string} [options.field="file"]
- * Field name for single or multiple uploads
- *
  * @param {string[]} [options.fields=[]]
- * Array of allowed field names (used only when type = "fields")
- *
  * @param {number} [options.maxCount=5]
- * Maximum number of files allowed per field
- *
  * @param {number} [options.maxSize=5242880]
- * Maximum file size in bytes (default: 5MB)
  *
- * @returns {Function}
- * Express middleware function configured for file uploads
+ * @returns {Function} Express middleware function configured for file uploads
  */
 export function uploadMiddleware({
     type = "single",
@@ -40,15 +27,42 @@ export function uploadMiddleware({
         limits: { fileSize: maxSize },
     });
 
+    // Middleware to check required fields after upload
+    const checkRequiredFields = (req, res, next) => {
+        if (type === "single" || type === "multiple") {
+            if (!req.file && !(req.files && req.files.length > 0)) {
+                return generateApiResponse(res, 400, "Missing required file(s)");
+            }
+        }
+
+        if (type === "fields") {
+            for (const name of fields) {
+                if (!req.files || !req.files[name] || req.files[name].length === 0) {
+                    return generateApiResponse(res, 400, `Missing required field: ${name}`);
+                }
+            }
+        }
+
+        next();
+    };
+
     if (type === "single") {
-        return upload.single(field);
+        return (req, res, next) => upload.single(field)(req, res, (err) => {
+            if (err) return next(err);
+            checkRequiredFields(req, res, next);
+        });
     }
 
     if (type === "fields") {
-        return upload.fields(
-            fields.map(name => ({ name, maxCount }))
-        );
+        return (req, res, next) => upload.fields(fields.map(name => ({ name, maxCount })))(req, res, (err) => {
+            if (err) return next(err);
+            checkRequiredFields(req, res, next);
+        });
     }
 
-    return upload.array(field, maxCount);
+    // type === "multiple"
+    return (req, res, next) => upload.array(field, maxCount)(req, res, (err) => {
+        if (err) return next(err);
+        checkRequiredFields(req, res, next);
+    });
 }
