@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import AuthService from "../services/auth.service.js";
 import { Role, User } from "../startup/models.js";
 import { generateApiResponse, generateErrorApiResponse } from "../utils/response.util.js";
-import { emailQueue } from './../queues/emailQueue.js';
+import { emailQueue } from './../queues/email_queue.js';
 
 class AuthController {
   /** ---------------------------------------

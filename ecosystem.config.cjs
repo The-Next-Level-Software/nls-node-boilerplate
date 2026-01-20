@@ -11,5 +11,10 @@ module.exports = {
             script: "src/workers/email_worker.js",
             interpreter: "node"
         },
+        {
+            name: "fileWorker",
+            script: "src/workers/file_worker.js",
+            interpreter: "node"
+        },
     ]
 };

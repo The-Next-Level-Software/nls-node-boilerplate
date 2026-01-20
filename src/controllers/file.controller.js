@@ -1,16 +1,18 @@
-import { fileService } from "../services/file.service.js";
 import { generateApiResponse, generateErrorApiResponse } from "../utils/response.util.js";
+import { FileUtils } from './../utils/file.util.js';
 
 export class FileController {
     // ==================== LOCAL FILE PROVIDER ====================
 
     static async uploadLocalFile(req, res) {
         try {
-            const file = await fileService.uploadSingle({
+            if (!req.file) return generateApiResponse(res, 400, "File is required");
+
+            const file = await FileUtils.enqueueFileJob("UPLOAD_SINGLE", "local", {
                 file: req.file,
                 options: {},
-                provider: "local",
             });
+
             return generateApiResponse(res, 200, "Local file uploaded", { file });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
@@ -19,62 +21,59 @@ export class FileController {
 
     static async uploadLocalImage(req, res) {
         try {
-            const file = await fileService.uploadSingle({
+            if (!req.file) return generateApiResponse(res, 400, "File is required");
+
+            const file = await FileUtils.enqueueFileJob("UPLOAD_SINGLE", "local", {
                 file: req.file,
                 options: { compress: true },
-                provider: "local",
             });
+
             return generateApiResponse(res, 200, "Local image uploaded and compressed", { file });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
     }
 
+
     static async uploadLocalFiles(req, res) {
         try {
-            const files = await fileService.uploadMultiple({
+            if (!req.files || req.files.length === 0) return generateApiResponse(res, 400, "Files are required");
+
+            const files = await FileUtils.enqueueFileJob("UPLOAD_MULTIPLE", "local", {
                 files: req.files,
                 options: {},
-                provider: "local",
             });
+
             return generateApiResponse(res, 200, "Local files uploaded", { files });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
     }
 
+
     static async uploadLocalImages(req, res) {
         try {
-            const files = await fileService.uploadMultiple({
+            if (!req.files || req.files.length === 0) return generateApiResponse(res, 400, "Files are required");
+
+            const files = await FileUtils.enqueueFileJob("UPLOAD_MULTIPLE", "local", {
                 files: req.files,
                 options: { compress: true },
-                provider: "local",
             });
+
             return generateApiResponse(res, 200, "Local images uploaded and compressed", { files });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
     }
 
+
     static async uploadLocalFields(req, res) {
         try {
-            const uploaded = [];
+            if (!req.files || Object.keys(req.files).length === 0) return generateApiResponse(res, 400, "Files are required");
 
-            // req.files is an object with field names as keys
-            for (const fieldName in req.files) {
-                const filesArray = req.files[fieldName];
-                for (const file of filesArray) {
-                    // Use your fileService to upload each file
-                    const uploadedFile = await fileService.uploadSingle({
-                        file,
-                        options: fieldName === "image" ? { compress: true } : {}, // compress images
-                        provider: "local",
-                    });
-                    uploaded.push({ field: fieldName, ...uploadedFile });
-                }
-            }
+            const uploaded = await FileUtils.enqueueFileJob("UPLOAD_FIELDS", "local", { fields: req.files });
 
-            return generateApiResponse(res, 200, "Files uploaded locally from multiple fields", { uploaded });
+            return generateApiResponse(res, 200, "Files uploaded from multiple fields", { uploaded });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
@@ -83,9 +82,11 @@ export class FileController {
     static async deleteFile(req, res) {
         try {
             const { fileId } = req.params;
-            console.log(fileId)
-            await fileService.deleteFile({ fileId });
-            return generateApiResponse(res, 200, "File deleted successfully");
+            if (!fileId) return generateApiResponse(res, 400, "FileId is required")
+
+            const result = await FileUtils.enqueueFileJob("DELETE_FILE", "local", { filename: fileId });
+
+            return generateApiResponse(res, 200, "File deleted successfully", result);
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
@@ -96,11 +97,14 @@ export class FileController {
 
     static async uploadS3File(req, res) {
         try {
-            const file = await fileService.uploadSingle({
-                file: req.file,
-                options: {},
-                provider: "s3",
-            });
+            if (!req.file) return generateApiResponse(res, 400, "File is required");
+
+            const file = await FileUtils.enqueueFileJob(
+                "UPLOAD_SINGLE",
+                "s3",
+                { file: req.file, options: {} }
+            );
+
             return generateApiResponse(res, 200, "S3 file uploaded", { file });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
@@ -109,24 +113,31 @@ export class FileController {
 
     static async uploadS3Image(req, res) {
         try {
-            const file = await fileService.uploadSingle({
-                file: req.file,
-                options: {},
-                provider: "s3",
-            });
+            if (!req.file) return generateApiResponse(res, 400, "File is required");
+
+            const file = await FileUtils.enqueueFileJob(
+                "UPLOAD_SINGLE",
+                "s3",
+                { file: req.file, options: {} }
+            );
+
             return generateApiResponse(res, 200, "S3 image uploaded", { file });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
     }
 
+    // ---------------- MULTIPLE FILES ----------------
     static async uploadS3Files(req, res) {
         try {
-            const files = await fileService.uploadMultiple({
-                files: req.files,
-                options: {},
-                provider: "s3",
-            });
+            if (!req.files || req.files.length === 0) return generateApiResponse(res, 400, "Files are required");
+
+            const files = await FileUtils.enqueueFileJob(
+                "UPLOAD_MULTIPLE",
+                "s3",
+                { files: req.files, options: {} }
+            );
+
             return generateApiResponse(res, 200, "S3 files uploaded", { files });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
@@ -135,33 +146,30 @@ export class FileController {
 
     static async uploadS3Images(req, res) {
         try {
-            const files = await fileService.uploadMultiple({
-                files: req.files,
-                options: {},
-                provider: "s3",
-            });
+            if (!req.files || req.files.length === 0) return generateApiResponse(res, 400, "Files are required");
+
+            const files = await FileUtils.enqueueFileJob(
+                "UPLOAD_MULTIPLE",
+                "s3",
+                { files: req.files, options: {} }
+            );
+
             return generateApiResponse(res, 200, "S3 images uploaded", { files });
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
     }
 
+    // ---------------- MULTIPLE FIELDS ----------------
     static async uploadS3Fields(req, res) {
         try {
-            const uploaded = [];
+            if (!req.files || Object.keys(req.files).length === 0) return generateApiResponse(res, 400, "Files are required");
 
-            // req.files is an object with keys = field names
-            for (const fieldName in req.files) {
-                const filesArray = req.files[fieldName];
-                for (const file of filesArray) {
-                    const uploadedFile = await fileService.uploadSingle({
-                        file,
-                        options: {},
-                        provider: "s3",
-                    });
-                    uploaded.push({ field: fieldName, ...uploadedFile });
-                }
-            }
+            const uploaded = await FileUtils.enqueueFileJob(
+                "UPLOAD_FIELDS",
+                "s3",
+                { fields: req.files }
+            );
 
             return generateApiResponse(res, 200, "Files uploaded to S3 from multiple fields", { uploaded });
         } catch (err) {
@@ -169,11 +177,19 @@ export class FileController {
         }
     }
 
+    // ---------------- DELETE FILE ----------------
     static async deleteS3File(req, res) {
         try {
             const { key } = req.params;
-            await fileService.deleteFile({ fileId: key, provider: "s3" });
-            return generateApiResponse(res, 200, "S3 file deleted successfully");
+            if (!key) return generateApiResponse(res, 400, "Key is required");
+
+            const result = await FileUtils.enqueueFileJob(
+                "DELETE_FILE",
+                "s3",
+                { filename: key }
+            );
+
+            return generateApiResponse(res, 200, "S3 file deleted successfully", result);
         } catch (err) {
             return generateErrorApiResponse(res, 500, err);
         }
