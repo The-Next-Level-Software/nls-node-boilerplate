@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-
+import crypto from "crypto";
 class LocalFileProvider {
     /**
      * Upload a file to the local public folder
@@ -27,8 +27,13 @@ class LocalFileProvider {
             fs.mkdirSync(basePath, { recursive: true });
         }
 
-        // Unique filename
-        const filename = `${Date.now()}-${file.originalname}`;
+        const ext = path.extname(file.originalname);
+
+        // random 6 chars
+        const random = crypto.randomBytes(3).toString("hex");
+
+        // final filename
+        const filename = `file-${Date.now()}-${random}${ext}`;
         const filePath = path.join(basePath, filename);
 
         // If image and compress option is true, resize
