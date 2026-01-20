@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import AuthService from "../services/auth.service.js";
 import { Role, User } from "../startup/models.js";
 import { generateApiResponse, generateErrorApiResponse } from "../utils/response.util.js";
+import { emailQueue } from './../queues/emailQueue.js';
 
 class AuthController {
   /** ---------------------------------------
@@ -19,18 +20,38 @@ class AuthController {
       return generateErrorApiResponse(res, StatusCodes.CONFLICT, "User already exists");
     }
 
-    const user = await User.create({ name, email, password, role: findRole && findRole._id });
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: findRole && findRole._id,
+    });
 
-    return generateApiResponse(res, StatusCodes.CREATED, "Registration successful", {
-      user: {
-        id: user._id,
+
+    await emailQueue.add("welcomeEmail", {
+      type: "welcome",
+      to: user.email,
+      variables: {
         name: user.name,
-        email: user.email,
-        role: user.role,
-        username: user.username,
       },
     });
+
+    return generateApiResponse(
+      res,
+      StatusCodes.CREATED,
+      "Registration successful",
+      {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          username: user.username,
+        },
+      }
+    );
   }
+
 
   /** ---------------------------------------
      * LOGIN
