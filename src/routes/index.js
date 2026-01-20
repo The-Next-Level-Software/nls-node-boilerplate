@@ -5,6 +5,7 @@ import express from "express";
 // import mobileRouter from "./mobile/router.js";
 import authRouter from "./auth.route.js";
 import userRouter from "./user.route.js";
+import uploadRoutes from "./file.route.js"
 import { WHITELIST } from "../config/whitelist.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 
@@ -15,6 +16,7 @@ const router = express.Router();
 // -----------------------------------------------------------------------------
 router.use("/auth", authRouter);
 router.use("/user", userRouter);
+router.use("/upload", uploadRoutes)
 // Example endpoints:
 // POST /api/auth/register
 // POST /api/auth/login

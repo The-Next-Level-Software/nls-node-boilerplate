@@ -7,6 +7,7 @@ import { WHITELIST } from "./config/whitelist.js";
 import authMiddleware from "./middlewares/auth.middleware.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import routes from "./routes/index.js";
+import path from "path";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 // Health check (public)
 app.get("/health", getHealthPage);
 app.get("/health.json", getHealth);
+app.use("/file", express.static(path.join(process.cwd(), "public")));
 
 // -----------------------------
 // Helmet only for /api routes

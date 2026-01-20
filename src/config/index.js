@@ -76,6 +76,13 @@ const appConfig = {
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || "", // leave empty if no password
   REDIS_DB: process.env.REDIS_DB || 0,             // optional: default DB 0
 
+  // FILE 
+  AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+  AWS_REGION: process.env.AWS_REGION,
+  AWS_BUCKET: process.env.AWS_BUCKET,
+  FILE_STORAGE: process.env.FILE_STORAGE || "local",
+
   pagination: {
     defaultPage: 1,
     defaultLimit: 10,
