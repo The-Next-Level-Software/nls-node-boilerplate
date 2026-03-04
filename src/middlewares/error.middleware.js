@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import logger from "../config/logger.js";
 import { generateErrorApiResponse } from "../utils/response.util.js";
 import { StringUtils } from "../utils/string.util.js";
+import { writeErrorFile } from "../utils/crashFileLogger.js";
 
 const errorMiddleware = (err, req, res, next) => {
   logger.error(`❌ Error code: ${err.code}`);
@@ -40,6 +41,10 @@ const errorMiddleware = (err, req, res, next) => {
   // Include error object in development mode
   if (process.env.NODE_ENV === "development") {
     data.error = err;
+  }
+
+  if (statusCode >= 500) {
+    writeErrorFile(err, "API_500_ERROR");
   }
 
   logger.warn(`ERROR: ${data}`);
