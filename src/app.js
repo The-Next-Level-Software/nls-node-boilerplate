@@ -9,6 +9,7 @@ import errorMiddleware from "./middlewares/error.middleware.js";
 import routes from "./routes/index.js";
 import path from "path";
 import { rateLimiter } from "./middlewares/rate-limiter.middleware.js";
+import { abuseFilterMiddleware } from "./middlewares/abusive-words.middleware.js";
 
 const app = express();
 
@@ -42,6 +43,12 @@ app.use(rateLimiter({
     requests: 200, // Max 200 requests
     minutes: 1    // Per 1 minute
 }));
+
+// -----------------------------
+// pREVENT ABUSIVE LANGUAGE (optional, can be applied to specific routes)
+// -----------------------------
+
+app.use(abuseFilterMiddleware);
 
 // -----------------------------
 // Global error handler
