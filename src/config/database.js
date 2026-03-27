@@ -1,5 +1,8 @@
 // src/config/database.js
 import mongoose from "mongoose";
+import dns from "dns";
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);// DNS issue in local servers fixed using this
 
 import appConfig from "./index.js";
 import logger from "./logger.js";

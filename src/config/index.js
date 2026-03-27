@@ -74,9 +74,9 @@ const appConfig = {
   REDIS_HOST: process.env.REDIS_HOST || "127.0.0.1",
   REDIS_PORT: process.env.REDIS_PORT || 6379,
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || "", // leave empty if no password
-  REDIS_DB: process.env.REDIS_DB || 0,             // optional: default DB 0
+  REDIS_DB: process.env.REDIS_DB || 0, // optional: default DB 0
 
-  // FILE 
+  // FILE
   AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
   AWS_REGION: process.env.AWS_REGION,
@@ -88,6 +88,9 @@ const appConfig = {
     defaultLimit: 10,
     defaultSortBy: "createdAt",
     defaultOrder: "desc",
+  },
+  backup: {
+    useMongoDump: false,
   },
 };
 
