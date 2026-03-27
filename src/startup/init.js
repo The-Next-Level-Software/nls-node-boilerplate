@@ -1,6 +1,7 @@
 // src/startup/init.js
 import { connectDB } from "../config/database.js";
 import logger from "../config/logger.js";
+import startCronJobs from "./cron.startup.js";
 
 export default async function init() {
   const connection = await connectDB();
@@ -11,6 +12,8 @@ export default async function init() {
   }
 
   logger.info("🚀 App initialization completed");
+
+  startCronJobs();
 
   // Add additional initialization tasks here:
   // - Redis connection
